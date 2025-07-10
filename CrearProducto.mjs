@@ -5,19 +5,15 @@ const lambdaClient = new LambdaClient();
 const dynamoClient = new DynamoDBClient();
 
 export const handler = async (event) => {
-  
     console.log("Evento recibido:", JSON.stringify(event));
 
     const producto = JSON.parse(event.body);
     const token = event.headers['Authorization'];
-
-    //DEBUG
-    console.log("TOKEN RECIBIDO EN HEADER:", token);
-    console.log("PRODUCTO RECIBIDO:", producto);
+    console.log("Token recibido en header:", token);
+    console.log("Producto recibido:", producto);
 
 
-    //Validar token
-    //Se llama con tenant_id y token
+    // Validar token llamando a otra Lambda
     const payload = JSON.stringify({
         body: JSON.stringify({
             tenant_id: producto.tenant_id,
@@ -28,7 +24,7 @@ export const handler = async (event) => {
     console.log("Payload que se enviará a ValidarTokenAcceso:", payload);
 
     const invokeParams = new InvokeCommand({
-        FunctionName: "ValidarTokenAcceso-proyecto-prueba", //<----NOMBRE A CAMBIAR SEGUN NOMBRE DE LAMBDA OFICIAL
+        FunctionName: process.env.VALIDAR_TOKEN_FUNC,
         InvocationType: "RequestResponse",
         Payload: Buffer.from(payload)
     });
@@ -47,7 +43,7 @@ export const handler = async (event) => {
 
     // Guardar producto en DynamoDB
     const putParams = new PutItemCommand({
-        TableName: "t_libro_proyecto_prueba", //<---- NOMBRE A CAMBIAR SEGUN NOMBRE DE TABLA OFICIAL
+        TableName: process.env.TABLE_NAME_PRODUCTS,
         Item: {
             tenant_id: { S: producto.tenant_id },
             libro_id: { S: producto.libro_id },
