@@ -26,7 +26,7 @@ export const handler = async (event) => {
         console.log("Payload que se enviará a ValidarTokenAcceso:", payload);
 
         const invokeParams = new InvokeCommand({
-            FunctionName: "ValidarTokenAcceso-proyecto-prueba", //CAMBIAR NOMBRE DE LAMBDA
+            FunctionName: process.env.VALIDAR_TOKEN_FUNC, 
             InvocationType: "RequestResponse",
             Payload: Buffer.from(payload)
         });
@@ -45,7 +45,7 @@ export const handler = async (event) => {
 
         // Verificar existencia del producto
         const getParams = new GetItemCommand({
-            TableName: "t_libro_proyecto_prueba", //CAMBIAR NOMBRE DE TABLA OFICIAL
+            TableName: process.env.TABLE_NAME_PRODUCTS, 
             Key: {
                 tenant_id: { S: producto.tenant_id },
                 libro_id: { S: producto.libro_id }
@@ -69,7 +69,7 @@ export const handler = async (event) => {
 
         // Eliminar el producto
         const deleteParams = new DeleteItemCommand({
-            TableName: "t_libro_proyecto_prueba", //CAMBIAR NOMBRE DE TABLA OFICIAL
+            TableName: process.env.TABLE_NAME_PRODUCTS, 
             Key: {
                 tenant_id: { S: producto.tenant_id },
                 libro_id: { S: producto.libro_id }
