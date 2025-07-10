@@ -12,7 +12,7 @@ export const handler = async (event) => {
         console.log("Producto parseado del body:", JSON.stringify(producto));
 
         const token = event.headers['Authorization'];
-        console.log("Token recibido en header:", token);
+        console.log("TOKEN RECIBIDO EN HEADER:", token);
 
         // Validar el token
         const payload = JSON.stringify({
@@ -25,7 +25,7 @@ export const handler = async (event) => {
         console.log("Payload que se enviará a ValidarTokenAcceso:", payload);
 
         const invokeParams = new InvokeCommand({
-            FunctionName: "ValidarTokenAcceso-proyecto-prueba", //CAMBIAR NOMBRE DE LAMBDA OFICIAL
+            FunctionName: process.env.VALIDAR_TOKEN_FUNC,
             InvocationType: "RequestResponse",
             Payload: Buffer.from(payload)
         });
@@ -44,7 +44,7 @@ export const handler = async (event) => {
 
         // Verificar existencia del producto
         const getParams = new GetItemCommand({
-            TableName: "t_libro_proyecto_prueba", //CAMBIAR NOMBRE DE TABLA OFICIAL VARIABLE DE ENTORNO
+            TableName: process.env.TABLE_NAME_PRODUCTS,
             Key: {
                 tenant_id: { S: producto.tenant_id },
                 libro_id: { S: producto.libro_id }
@@ -66,10 +66,9 @@ export const handler = async (event) => {
             };
         }
 
-      
         // Modificar el producto
         const updateParams = new UpdateItemCommand({
-            TableName: "t_libro_proyecto_prueba",      //CAMBIAR NOMBRE DE TABLA OFICIAL VARIABLE DE ENTORNO
+            TableName: process.env.TABLE_NAME_PRODUCTS,
             Key: {
                 tenant_id: { S: producto.tenant_id },
                 libro_id: { S: producto.libro_id }
@@ -95,7 +94,7 @@ export const handler = async (event) => {
         };
 
     } catch (err) {
-        console.error("ERROR en ModificarProducto:", err);
+        console.error("🚨 ERROR en ModificarProducto:", err);
         return {
             statusCode: 500,
             body: JSON.stringify({
