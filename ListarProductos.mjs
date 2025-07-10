@@ -8,7 +8,6 @@ export const handler = async (event) => {
     console.log("Evento recibido:", JSON.stringify(event));
 
     try {
-        // Leer parámetros del query string
         const params = event.queryStringParameters || {};
         const tenant_id = params.tenant_id;
         const startKey = params.startKey;  // es el libro_id
@@ -30,7 +29,7 @@ export const handler = async (event) => {
         console.log("Payload que se enviará a ValidarTokenAcceso:", payload);
 
         const invokeParams = new InvokeCommand({
-            FunctionName: "ValidarTokenAcceso-proyecto-prueba", //CAMBIAR NOMBRE DE LAMBDA
+            FunctionName: process.env.VALIDAR_TOKEN_FUNC, 
             InvocationType: "RequestResponse",
             Payload: Buffer.from(payload)
         });
@@ -49,7 +48,7 @@ export const handler = async (event) => {
 
         // Query a DynamoDB con paginado
         const queryParams = {
-          TableName: "t_libro_proyecto_prueba", //CAMBIAR NOMBRE DE TABLA
+          TableName: process.env.TABLE_NAME_PRODUCTS,
           KeyConditionExpression: "tenant_id = :t",
           ExpressionAttributeValues: {
               ":t": { S: tenant_id }
