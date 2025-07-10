@@ -1,4 +1,4 @@
-service: microservicio-compras
+service: microservicio-productos
 org: parislht
 
 provider:
