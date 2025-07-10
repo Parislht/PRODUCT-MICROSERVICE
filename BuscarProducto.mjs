@@ -5,11 +5,9 @@ const lambdaClient = new LambdaClient();
 const dynamoClient = new DynamoDBClient();
 
 export const handler = async (event) => {
-    console.log("========== INICIO DE BUSCARPRODUCTO ==========");
     console.log("Evento recibido:", JSON.stringify(event));
 
     try {
-        // Leer parámetros del query string
         const params = event.queryStringParameters || {};
         const tenant_id = params.tenant_id;
         const libro_id = params.libro_id;
@@ -31,7 +29,7 @@ export const handler = async (event) => {
         console.log("Payload que se enviará a ValidarTokenAcceso:", payload);
 
         const invokeParams = new InvokeCommand({
-            FunctionName: "ValidarTokenAcceso-proyecto-prueba",//CAMBIAR NOMBRE DE LAMBDA
+            FunctionName: process.env.VALIDAR_TOKEN_FUNC,
             InvocationType: "RequestResponse",
             Payload: Buffer.from(payload)
         });
@@ -50,7 +48,7 @@ export const handler = async (event) => {
 
         // Buscar el producto en DynamoDB
         const getParams = new GetItemCommand({
-            TableName: "t_libro_proyecto_prueba", //CAMBIAR NOMBRE DE TABLA 
+            TableName: process.env.TABLE_NAME_PRODUCTS,
             Key: {
                 tenant_id: { S: tenant_id },
                 libro_id: { S: libro_id }
