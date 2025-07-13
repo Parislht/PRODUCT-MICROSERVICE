@@ -1,0 +1,80 @@
+DESCARGAR IMAGEN OFICIAL DE ELASTICSEARCH
+docker pull elasticsearch:8.12.1
+
+
+CREAR DIRECTORIO PARA VOLUMEN 
+mkdir -p /home/ubuntu/elasticsearch_data
+sudo chown -R 1000:1000 /home/ubuntu/elasticsearch_data
+
+
+LEVANTAR CONTENEDOR CON VOLUMEN EN PUERO 9200
+docker run -d \
+  --name elasticsearch_c \
+  -p 9100:9200 \
+  -e "discovery.type=single-node" \
+  -e "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
+  -e "xpack.security.enabled=false" \
+  -v /home/ubuntu/elasticsearch_data:/usr/share/elasticsearch/data \
+  elasticsearch:8.12.1
+
+
+PROBAR CONEXION DE ELASTICSEARCH
+curl http://localhost:9100
+
+
+INSERTAR DOCUMENTOS (REGISTROS)
+curl -X PUT "http://localhost:9100/libros/_doc/NovaBooks-LIB0000001" \
+ -H 'Content-Type: application/json' \
+ -d '{
+  "tenant_id": "NovaBooks",
+  "libro_id": "LIB0000001",
+  "titulo": "PRUEBA ELASTIC",
+  "autor": "PRUEBA ELASTIC",
+  "precio": 100,
+  "stock": 1000,
+  "descripcion": "PRUEBA ELASTIC"
+}'
+
+
+CONSULTA DE BUSQUEDAS
+
+Match
+curl -X GET "http://localhost:9100/libros/_search" \
+ -H 'Content-Type: application/json' \
+ -d '{
+  "query": {
+    "match": {
+      "titulo": "ELASTIC"
+    }
+  }
+}'
+
+Prefix
+curl -X GET "http://localhost:9100/libros/_search" \
+ -H 'Content-Type: application/json' \
+ -d '{
+  "query": {
+    "prefix": {
+      "titulo": "PRUE"
+    }
+  }
+}'
+
+Fuzzy
+curl -X GET "http://localhost:9100/libros/_search" \
+ -H 'Content-Type: application/json' \
+ -d '{
+  "query": {
+    "match": {
+      "titulo": {
+        "query": "ELASTIK",
+        "fuzziness": "AUTO"
+      }
+    }
+  }
+}'
+
+
+ELIMINAR DOCUMENTOS
+curl -X DELETE "http://localhost:9100/libros/_doc/NovaBooks-LIB0000001"
+
