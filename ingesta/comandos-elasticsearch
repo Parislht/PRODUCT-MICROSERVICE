@@ -10,6 +10,7 @@ sudo chown -R 1000:1000 /home/ubuntu/elasticsearch_data
 LEVANTAR CONTENEDOR CON VOLUMEN EN PUERO 9200
 docker run -d \
   --name elasticsearch_c \
+  --restart unless-stopped \
   -p 9100:9200 \
   -e "discovery.type=single-node" \
   -e "ES_JAVA_OPTS=-Xms1g -Xmx1g" \
